@@ -1,0 +1,65 @@
+<html>
+
+
+
+<head></head>
+
+<body>
+
+<h4>Parse test</h4>
+
+
+
+
+	
+
+
+
+<script>
+
+	function getRequest() {
+		var xhr = new XMLHttpRequest();
+		
+
+		xhr.onload = function(e) {
+
+		var byteCount = 0;
+		var data = this.response;
+		var first64 = data.slice(0,8);
+		var s64 = data.slice(8,16);
+		var t64 = data.slice(16,24);
+
+		getFloat64(first64);
+		getFloat64(s64);
+		getFloat64(t64);
+
+
+	  	}
+		xhr.open('GET', '../3452.terrain', true);
+		xhr.send(null);
+		xhr.responseType = "arraybuffer";
+ 	}
+
+ 	function getFloat64(d) {
+ 		var k = new Float64Array(d);
+ 		console.log(k[0]/1000);
+ 		return k;
+ 	}
+
+ 	function handle(data) {
+ 		var byteCount = 0;
+		var length = new Uint8Array(data).length;
+ 		console.log(length);
+ 		console.log(data);
+			// var uint8 = new Uint8Array(data.slice(byteCount,byteCount++)); // Endianness
+				
+ 	}
+
+getRequest();
+</script>
+
+
+</body>
+
+
+</html>
