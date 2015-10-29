@@ -51,7 +51,7 @@ int main(int argc, const char *argv[])
 
 	QuantizedMeshHeader header;
 	VertexData vertexData;
-    ifstream input_file("testtile", ios::binary);
+    ifstream input_file("3452.terrain", ios::binary);
 	input_file.read((char*)&header, sizeof(header));
 
 	cout.precision(15);
@@ -76,45 +76,45 @@ int main(int argc, const char *argv[])
 
 	cout << "Loading vertices: ";
 
-	unsigned short u[vertexCount];
-	unsigned short v[vertexCount];
-	unsigned short heights[vertexCount];
-	unsigned int n;
-	int r;
-	int temp;
-	printf("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu: \n");
-	for(n = 0; n < vertexCount; n++) {
-		input_file.read((char*)&u[n], sizeof(u[0]));
-		printf("%u \n", u[n]);
-		temp = u[n];
-		r = (temp >> 1) ^ (-temp & 1);
-		printf("%u => %d\n", temp, r);
-	}
+	// unsigned short u[vertexCount];
+	// unsigned short v[vertexCount];
+	// unsigned short heights[vertexCount];
+	// unsigned int n;
+	// int r;
+	// int temp;
+	// printf("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu: \n");
+	// for(n = 0; n < vertexCount; n++) {
+	// 	input_file.read((char*)&u[n], sizeof(u[0]));
+	// 	printf("%u \n", u[n]);
+	// 	temp = u[n];
+	// 	r = (temp >> 1) ^ (-temp & 1);
+	// 	printf("%u => %d\n", temp, r);
+	// }
 
-	printf("vvvvvvvvvvvvvvvvvvvvvvvvvvvv: \n");
-	for(n = 0; n < vertexCount; n++) {
-		input_file.read((char*)&v[n], sizeof(v[0]));
-		printf("%u \n", v[n]);
+	// printf("vvvvvvvvvvvvvvvvvvvvvvvvvvvv: \n");
+	// for(n = 0; n < vertexCount; n++) {
+	// 	input_file.read((char*)&v[n], sizeof(v[0]));
+	// 	printf("%u \n", v[n]);
 
-		temp = v[n];
-		r = (temp >> 1) ^ (-temp & 1);
-		printf("%u => %d\n", temp, r);
-	// 	r = (u[n] >> 1) ^ (-(u[n] & 1));
-	// 	printf("%u => %d\n", u[n], r);
-	}
-	printf("Hhhhhhhhhhhhhhhhhhhhhhhhhhhhhheights\n");
-	for(n = 0; n < vertexCount; n++) {
-		input_file.read((char*)&heights[n], sizeof(heights[0]));
-		printf("%u \n", heights[n]);
+	// 	temp = v[n];
+	// 	r = (temp >> 1) ^ (-temp & 1);
+	// 	printf("%u => %d\n", temp, r);
+	// // 	r = (u[n] >> 1) ^ (-(u[n] & 1));
+	// // 	printf("%u => %d\n", u[n], r);
+	// }
+	// printf("Hhhhhhhhhhhhhhhhhhhhhhhhhhhhhheights\n");
+	// for(n = 0; n < vertexCount; n++) {
+	// 	input_file.read((char*)&heights[n], sizeof(heights[0]));
+	// 	printf("%u \n", heights[n]);
 
-		input_file.read((char*)&vertexData, sizeof(vertexData));
+	// 	input_file.read((char*)&vertexData, sizeof(vertexData));
 
-		temp = heights[n];
-		r = (temp >> 1) ^ (-temp & 1);
-		printf("%u => %d\n", temp, r);
-	// 	r = (u[n] >> 1) ^ (-(u[n] & 1));
-	// 	printf("%u => %d\n", u[n], r);
-	}
+	// 	temp = heights[n];
+	// 	r = (temp >> 1) ^ (-temp & 1);
+	// 	printf("%u => %d\n", temp, r);
+	// // 	r = (u[n] >> 1) ^ (-(u[n] & 1));
+	// // 	printf("%u => %d\n", u[n], r);
+	// }
 
 
 	// input_file.read((char*)&vertexData, sizeof(vertexData));
