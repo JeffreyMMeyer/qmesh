@@ -64,7 +64,10 @@
 	var FLOAT64_BYTE_SIZE = 8;
 	var FLOAT32_BYTE_SIZE = 4;
 
-	var url = "http://assets.agi.com/stk-terrain/world/12/1566/2762.terrain?v=1.16389.0";
+	// var url = "http://assets.agi.com/stk-terrain/world/13/1301/8499.terrain?v=1.16389.0";
+
+	var url = "http://assets.agi.com/stk-terrain/world/13/8498/6889.terrain?v=1.16389.0";
+	var url = "http://assets.agi.com/stk-terrain/world/13/8498/6900.terrain?v=1.16389.0";
 	var xtile = 2762;
 	var ytile = 1566;
 	var zoom = 12;
@@ -87,13 +90,13 @@
  		for (var i = 0; i < u.length; i++) {
  			geometry.vertices.push(new THREE.Vector3(u[i], v[i], heights[i]));
  		}
- 		console.log(indices);
- 		for (var i = 0; i < indices.length; i+=3) {
-			geometry.faces.push(new THREE.Face3(indices[i], indices[i-1], indices[i-2]));				
- 		}
+ 	// 	console.log(indices);
+ 	// 	for (var i = 0; i < indices.length; i+=3) {
+		// 	geometry.faces.push(new THREE.Face3(indices[i], indices[i-1], indices[i-2]));				
+ 	// 	}
 
-		geometry.computeFaceNormals();
-		geometry.computeVertexNormals();
+		// geometry.computeFaceNormals();
+		// geometry.computeVertexNormals();
 
 		return geometry;
 
@@ -175,8 +178,8 @@
  		var controls
  		var material;
  		var geometry;
- 		var width = $('#three').width();
- 		var height = $('#three').height()
+ 		var width = 600;
+ 		var height = 400;
 
  		function setup() {
 
@@ -193,7 +196,7 @@
 			
 			material = new THREE.MeshLambertMaterial({  color: 0xefefef, shading: THREE.SmoothShading});
 			
-			document.getElementById('three').appendChild(renderer.domElement);
+			// document.getElementById('three').appendChild(renderer.domElement);
 	        
  		}
 
@@ -262,9 +265,9 @@
             u += zigZagDecode(uArray[i]);
             v += zigZagDecode(vArray[i]);
             height += zigZagDecode(heightArray[i]);
-            uArray[i] = u;
-            vArray[i] = v;
-            heightArray[i] = height;
+            uArray[i] = u/100;
+            vArray[i] = v/100;
+            heightArray[i] = height/100;
         }
  		if (byteCount % 2 !== 0) {
             byteCount += (2 - (byteCount % 2));
@@ -315,13 +318,113 @@
 
         $('#tile-header-content').append($(headerTemplate(header)));
 
-        visualizer.setup();
+        // visualizer.setup();
         console.log(uArray);
         var geom = buildGeometry(uArray, vArray, heightArray, indices);
-        console.log(geom);
-        visualizer.showGeometry(geom);
+        // console.log(geom);
+        // visualizer.showGeometry(geom);
+        visualize(geom);
  	}
 
+ 	function visualize(geometry) {
+
+	var scene, camera, renderer;
+
+	var container, HEIGHT,
+		WIDTH, fieldOfView, aspectRatio,
+		nearPlane, farPlane, stats,
+		geometry, particleCount,
+		i, h, color, size,
+		materials = [],
+		mouseX = 0,
+		mouseY = 0,
+		windowHalfX, windowHalfY, cameraZ,
+		fogHex, fogDensity, parameters = {},
+		parameterCount, particles;
+
+	init();
+	animate();
+
+	function init() {
+
+		HEIGHT = 400;
+		WIDTH = 600;
+		windowHalfX = WIDTH / 2;
+		windowHalfY = HEIGHT / 2;
+
+		fieldOfView = 75;
+		aspectRatio = WIDTH / HEIGHT;
+		nearPlane = 1;
+		farPlane = 3000;
+
+	cameraZ = farPlane / 3;		/*	So, 1000? Yes! move on!	*/
+	fogHex = 0x000000;			/* As black as your heart.	*/
+	fogDensity = 0.0007; 		/* So not terribly dense?	*/
+
+	camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
+	camera.position.z = cameraZ;
+
+	scene = new THREE.Scene();
+	scene.fog = new THREE.FogExp2(fogHex, fogDensity);
+
+	container = $('#three');
+
+	// geometry = new THREE.Geometry();	/*	NO ONE SAID ANYTHING ABOUT MATH! UGH!	*/
+
+	// particleCount = 20000;
+
+
+	// for (i = 0; i < particleCount; i++) {
+
+	// 	var vertex = new THREE.Vector3();
+	// 	vertex.x = Math.random() * 2000 - 1000;
+	// 	vertex.y = Math.random() * 2000 - 1000;
+	// 	vertex.z = Math.random() * 2000 - 1000;
+
+	// 	geometry.vertices.push(vertex);
+	// }
+
+	var edgesGeom = new THREE.Geometry();
+	var max = 32767/100;
+
+	edgesGeom.vertices.push(new THREE.Vector3(0,0,0));
+	edgesGeom.vertices.push(new THREE.Vector3(0,max,0));
+	edgesGeom.vertices.push(new THREE.Vector3(max,0,0));
+	edgesGeom.vertices.push(new THREE.Vector3(max, max,0));
+
+
+
+	var material = new THREE.PointsMaterial({color: 'red', size: 20});
+
+	var edgesParticles = new THREE.Points(edgesGeom, material);
+	console.log(geometry);
+	scene.add(edgesParticles);
+	var material = new THREE.PointsMaterial({size: 2});
+
+	particles = new THREE.Points(geometry, material);
+
+	scene.add(particles);
+	renderer = new THREE.WebGLRenderer(); 				/*	Rendererererers particles.	*/
+	renderer.setPixelRatio(window.devicePixelRatio);	/*	Probably 1; unless you're fancy.	*/
+	renderer.setSize(WIDTH, HEIGHT);					/*	Full screen baby Wooooo!	*/
+
+	container.append(renderer.domElement);		/* Let's add all this crazy junk to the page.	*/
+
+	}
+
+	function animate() {
+		requestAnimationFrame(animate);
+		render();
+	}
+
+	function render() {
+		var time = Date.now() * 0.00005;
+
+		camera.lookAt(scene.position);
+
+		renderer.render(scene, camera);		
+	}
+ 	}
 
  	function handle(data) {
  		var byteCount = 0;
@@ -336,8 +439,8 @@
 		xhr.onload = function(e) {
 			parseQuantizedMeshTile(this.response);
 	  	}
-		xhr.open('GET', '../3452.terrain', true);
-		// xhr.open('GET', url, true);
+		// xhr.open('GET', '../3452.terrain', true);
+		xhr.open('GET', url, true);
 		xhr.send(null);
 		xhr.responseType = "arraybuffer";
  	}
