@@ -51,393 +51,24 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.2.3/backbone.js"></script>
-<script type="text/javascript" src= "https://cdnjs.cloudflare.com/ajax/libs/three.js/r73/three.min.js"></script>
+<script type="text/javascript" src= "https://cdnjs.cloudflare.com/ajax/libs/three.js/r73/three.js"></script>
 
-	<script>
+<script src="js/QTileReader.js"></script>
+<script src="js/ThreeTileViewer.js"></script>
+<script src="js/main.js"></script>
 
-	var $threeDiv = $('#three');
-
-	var visualizer;
-
-	var UINT16_BYTE_SIZE = 2;
-	var UINT32_BYTE_SIZE = 4;
-	var FLOAT64_BYTE_SIZE = 8;
-	var FLOAT32_BYTE_SIZE = 4;
-
-	// var url = "http://assets.agi.com/stk-terrain/world/13/1301/8499.terrain?v=1.16389.0";
-
-	var url = "http://assets.agi.com/stk-terrain/world/13/8498/6889.terrain?v=1.16389.0";
+<script>
 	var url = "http://assets.agi.com/stk-terrain/world/13/8498/6900.terrain?v=1.16389.0";
-	var xtile = 2762;
-	var ytile = 1566;
-	var zoom = 12;
-	var nw = getTileBounds(xtile, ytile, zoom);
-	var se = getTileBounds(xtile+1, ytile+1, zoom);
-	console.log(nw, se);
-    var headerTemplate = _.template( $('#tile-header-template').html());
+	
+	var qReader = new qmesh.TileReader();
+	var tileViewer = new qmesh.TileViewer();
 
- 	function buildVertices(geometry, maxLL, minLL, u, v, heights) {
- 		for (var i = 0; i < u.length; i++) {
- 			geometry.vertices.push(new THREE.Vertex3());
- 		}
- 	}
 
- 	function buildGeometry(u, v, heights, indices) {
-
-
- 		var geometry = new THREE.Geometry();
-
- 		for (var i = 0; i < u.length; i++) {
- 			geometry.vertices.push(new THREE.Vector3(u[i], v[i], heights[i]));
- 		}
- 	// 	console.log(indices);
- 	// 	for (var i = 0; i < indices.length; i+=3) {
-		// 	geometry.faces.push(new THREE.Face3(indices[i], indices[i-1], indices[i-2]));				
- 	// 	}
-
-		// geometry.computeFaceNormals();
-		// geometry.computeVertexNormals();
-
-		return geometry;
-
- 	}
-
-
-    function zigZagDecode(value) {
-    	// REF CESIUM SOURCE CODE
-        return (value >> 1) ^ (-(value & 1));
-    }
- 	function getHeader(data, byteCount) {
-
-		return {
-			centerX : getFloat64(data, byteCount),
-		    centerY : getFloat64(data, byteCount + 8),
-		    centerZ : getFloat64(data, byteCount + 16),
-		    minimumHeight : getFloat32(data, byteCount + 24),
-		    maximumHeight : getFloat32(data, byteCount + 28),
-		    boundingSphereCenterX : getFloat64(data, byteCount + 32),
-		    boundingSphereCenterY : getFloat64(data, byteCount + 40),
-		    boundingSphereCenterZ : getFloat64(data, byteCount + 48),
-		    boundingSphereRadius : getFloat64(data, byteCount + 56),
-		    horizonOcclusionPointX : getFloat64(data, byteCount + 64),
-		    horizonOcclusionPointY : getFloat64(data, byteCount + 72),
-		    horizonOcclusionPointZ : getFloat64(data, byteCount + 80)
-		}
- 	}
- 	function getVertexCount(data, byteCount) {
- 		var int16View = new Uint16Array(data.slice(byteCount, byteCount+=2));
- 		return int16View[0];
-	}
- 	function getTileBounds(tx, ty, zoom) {
- 		//http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Tile_numbers_to_lon..2Flat.
-		var n = Math.pow(2, zoom);
-		var lon_deg = tx / n * 360.0 -180.0;
-		var lat_rad = Math.atan(Math.sinh(Math.PI * (1 - 2 * ty / n)));
-		var lat_deg = lat_rad * 180.0 / Math.PI;
-		return { lon: lon_deg, lat: lat_deg};
- 	}
- 	function getUint32Array(data, startPos, count) {
- 		return new Uint32Array(data.slice(startPos, startPos + 4*count));
- 	}
- 	function getUint32(data, startPos) {
- 		return getUint32Array(data, startPos, 1)[0];
- 	}
- 	function getUint16Array(data, startPos, count) {
- 		return new Uint16Array(data.slice(startPos, startPos + 2*count));
- 	}
- 	function getUint16(data, startPos) {
- 		return getUint16Array(data, startPos, 1)[0];
- 	}
- 	function getFloat64Array(data, startPos, count) {
- 		return new Float64Array(data.slice(startPos, startPos + 8 * count));
- 	}
- 	function getFloat64(data, startPos) {
- 		return getFloat64Array(data, startPos, 1)[0]; 		
- 	}
- 	function getFloat32Array(data, startPos, count) {
- 		return new Float32Array(data.slice(startPos, startPos + 4*count));
- 	}
- 	function getFloat32(data, startPos) {
- 		return getFloat32Array(data, startPos, 1)[0]; 		
- 	}
-
-
- 	function getFloat64o(d) {
- 		var f64 = new Float64Array(d);
- 		return f64[0];
- 	}
-
-
-
-
- 	var visualizer = (function() {
-
- 		var scene;
- 		var camera;
- 		var renderer;
- 		var controls
- 		var material;
- 		var geometry;
- 		var width = 600;
- 		var height = 400;
-
- 		function setup() {
-
-			camera = new THREE.PerspectiveCamera(25, width / height, 0.1, 60000);
-			camera.position.set(0, -420, 320);	
-			// controls = new THREE.TrackballControls(camera); 
-			
-			renderer = new THREE.WebGLRenderer( { antialias: true } );
-			renderer.setSize(width, height);
-			renderer.setClearColor( 0xffffff, 1);
-			
-			scene = new THREE.Scene();
-			scene.add(new THREE.AmbientLight(0x222222));
-			
-			material = new THREE.MeshLambertMaterial({  color: 0xefefef, shading: THREE.SmoothShading});
-			
-			// document.getElementById('three').appendChild(renderer.domElement);
-	        
- 		}
-
- 		function showGeometry(geometry) {
-
- 			geometry = geometry;
- 			console.log(material);
- 			mesh = THREE.Mesh(geometry, material);
- 			scene.add(mesh);
- 			render();
- 		}
-
-
-		function render() {
-			requestAnimationFrame(render);
-			renderer.render(scene, camera);
-		}
-
-		return {
-			setup: setup,
-			showGeometry: showGeometry
-		}
-
-
- 	})();
-
-
-
-
-
-
-
-
-
- 	function parseQuantizedMeshTile(data, x, y, z) {
-		var byteCount = 0;
-		var length = data.byteLength;
-
-		var qtile = {};
- 		
- 		var header = getHeader(data, byteCount);
-		byteCount += 88;
-
-
-		var vertexCount = getUint32(data, byteCount);
-		byteCount += UINT32_BYTE_SIZE;
-
-		var uArray = getUint16Array(data, byteCount, vertexCount);
-		byteCount += vertexCount * UINT16_BYTE_SIZE;
-
-		var vArray = getUint16Array(data, byteCount, vertexCount);
-		byteCount += vertexCount * UINT16_BYTE_SIZE;
-
-		var heightArray = getUint16Array(data, byteCount, vertexCount);
-		byteCount += vertexCount * UINT16_BYTE_SIZE;
-
-
-        var i;
-        var u = 0;
-        var v = 0;
-        var height = 0;
-        function zigZagDecode(value) {
-            return (value >> 1) ^ (-(value & 1));
-        }
-        for (i = 0; i < vertexCount; ++i) {
-            u += zigZagDecode(uArray[i]);
-            v += zigZagDecode(vArray[i]);
-            height += zigZagDecode(heightArray[i]);
-            uArray[i] = u/100;
-            vArray[i] = v/100;
-            heightArray[i] = height/100;
-        }
- 		if (byteCount % 2 !== 0) {
-            byteCount += (2 - (byteCount % 2));
-        }
-        var triangleCount = getUint32(data, byteCount);
-        byteCount += UINT32_BYTE_SIZE;
-        
-	    console.log("triangleCount", triangleCount);
-	    console.log("vertexCount", vertexCount);
-
-		var indices = getUint16Array(data, byteCount, triangleCount);
-		byteCount += triangleCount * 3 * 2;
-
-        console.log(indices);
-		var highest = 0;
-        for (i = 0; i < indices.length; ++i) {
-            var code = indices[i];
-            indices[i] = highest - code;
-            if (code === 0) {
-                ++highest;
-            }
-        }
-        console.log(indices);
-        
-        var westVertexCount = getUint32(data,byteCount);
-        byteCount += UINT32_BYTE_SIZE;
-        var westIndices = getUint16Array(data,byteCount,westVertexCount);
-        byteCount += UINT16_BYTE_SIZE * westVertexCount;
-
-		var southVertexCount= getUint32(data, byteCount);
-        byteCount += UINT32_BYTE_SIZE;
-        var southIndices = getUint16Array(data, byteCount, southVertexCount);
-        byteCount += UINT16_BYTE_SIZE * southVertexCount;
-		
-		var eastVertexCount = getUint32(data, byteCount);
-        byteCount += UINT32_BYTE_SIZE;
-        var eastIndices = getUint16Array(data, byteCount, eastVertexCount);
-        byteCount += UINT16_BYTE_SIZE * eastVertexCount;
-        
-        var northVertexCount = getUint32(data, byteCount);
-        byteCount += UINT32_BYTE_SIZE;
-        var northIndices = getUint16Array(data, byteCount, northVertexCount);
-        byteCount += UINT16_BYTE_SIZE * northVertexCount;
-        
-        console.log (westVertexCount, eastVertexCount, southVertexCount, northVertexCount);
-
-
-
-        $('#tile-header-content').append($(headerTemplate(header)));
-
-        // visualizer.setup();
-        console.log(uArray);
-        var geom = buildGeometry(uArray, vArray, heightArray, indices);
-        // console.log(geom);
-        // visualizer.showGeometry(geom);
-        visualize(geom);
- 	}
-
- 	function visualize(geometry) {
-
-	var scene, camera, renderer;
-
-	var container, HEIGHT,
-		WIDTH, fieldOfView, aspectRatio,
-		nearPlane, farPlane, stats,
-		geometry, particleCount,
-		i, h, color, size,
-		materials = [],
-		mouseX = 0,
-		mouseY = 0,
-		windowHalfX, windowHalfY, cameraZ,
-		fogHex, fogDensity, parameters = {},
-		parameterCount, particles;
-
-	init();
-	animate();
-
-	function init() {
-
-		HEIGHT = 400;
-		WIDTH = 600;
-		windowHalfX = WIDTH / 2;
-		windowHalfY = HEIGHT / 2;
-
-		fieldOfView = 75;
-		aspectRatio = WIDTH / HEIGHT;
-		nearPlane = 1;
-		farPlane = 3000;
-
-	cameraZ = farPlane / 3;		/*	So, 1000? Yes! move on!	*/
-	fogHex = 0x000000;			/* As black as your heart.	*/
-	fogDensity = 0.0007; 		/* So not terribly dense?	*/
-
-	camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
-	camera.position.z = cameraZ;
-
-	scene = new THREE.Scene();
-	scene.fog = new THREE.FogExp2(fogHex, fogDensity);
-
-	container = $('#three');
-
-	// geometry = new THREE.Geometry();	/*	NO ONE SAID ANYTHING ABOUT MATH! UGH!	*/
-
-	// particleCount = 20000;
-
-
-	// for (i = 0; i < particleCount; i++) {
-
-	// 	var vertex = new THREE.Vector3();
-	// 	vertex.x = Math.random() * 2000 - 1000;
-	// 	vertex.y = Math.random() * 2000 - 1000;
-	// 	vertex.z = Math.random() * 2000 - 1000;
-
-	// 	geometry.vertices.push(vertex);
-	// }
-
-	var edgesGeom = new THREE.Geometry();
-	var max = 32767/100;
-
-	edgesGeom.vertices.push(new THREE.Vector3(0,0,0));
-	edgesGeom.vertices.push(new THREE.Vector3(0,max,0));
-	edgesGeom.vertices.push(new THREE.Vector3(max,0,0));
-	edgesGeom.vertices.push(new THREE.Vector3(max, max,0));
-
-
-
-	var material = new THREE.PointsMaterial({color: 'red', size: 20});
-
-	var edgesParticles = new THREE.Points(edgesGeom, material);
-	console.log(geometry);
-	scene.add(edgesParticles);
-	var material = new THREE.PointsMaterial({size: 2});
-
-	particles = new THREE.Points(geometry, material);
-
-	scene.add(particles);
-	renderer = new THREE.WebGLRenderer(); 				/*	Rendererererers particles.	*/
-	renderer.setPixelRatio(window.devicePixelRatio);	/*	Probably 1; unless you're fancy.	*/
-	renderer.setSize(WIDTH, HEIGHT);					/*	Full screen baby Wooooo!	*/
-
-	container.append(renderer.domElement);		/* Let's add all this crazy junk to the page.	*/
-
-	}
-
-	function animate() {
-		requestAnimationFrame(animate);
-		render();
-	}
-
-	function render() {
-		var time = Date.now() * 0.00005;
-
-		camera.lookAt(scene.position);
-
-		renderer.render(scene, camera);		
-	}
- 	}
-
- 	function handle(data) {
- 		var byteCount = 0;
-		var length = new Uint8Array(data).length;
-			// var uint8 = new Uint8Array(data.slice(byteCount,byteCount++)); // Endianness
-				
- 	}
-
- 		function getRequest() {
+	function getRequest() {
 		var xhr = new XMLHttpRequest();
 		
 		xhr.onload = function(e) {
-			parseQuantizedMeshTile(this.response);
+			handleTileResponse(this.response);
 	  	}
 		// xhr.open('GET', '../3452.terrain', true);
 		xhr.open('GET', url, true);
@@ -445,9 +76,17 @@
 		xhr.responseType = "arraybuffer";
  	}
 
+ 	function handleTileResponse(data) {
+ 		var tile = qReader.parseTile(data);
+ 		var geometry = buildGeometry(tile.u, tile.v, tile.heights, tile.indices);
+ 		tileViewer.showTile(geometry);
+
+ 	}
+
  	
 
 getRequest();
+
 </script>
 
 
