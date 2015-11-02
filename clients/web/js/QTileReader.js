@@ -41,7 +41,7 @@ var qmesh = qmesh || {};
 
 			var vertexCount = getUint32(data, byteCount);
 			byteCount += UINT32_BYTE_SIZE;
-
+console.log(vertexCount);
 			var uArray = getUint16Array(data, byteCount, vertexCount);
 			byteCount += vertexCount * UINT16_BYTE_SIZE;
 
@@ -50,7 +50,6 @@ var qmesh = qmesh || {};
 
 			var heightArray = getUint16Array(data, byteCount, vertexCount);
 			byteCount += vertexCount * UINT16_BYTE_SIZE;
-
 
 	        var i;
 	        var u = 0;
@@ -70,22 +69,14 @@ var qmesh = qmesh || {};
 	            byteCount += (2 - (byteCount % 2));
 	        }
 
+			console.log(uArray, vArray, heightArray);
 	        var triangleCount = getUint32(data, byteCount);
 	        byteCount += UINT32_BYTE_SIZE;
 
-			var indices = getUint16Array(data, byteCount, triangleCount);
+			var indices = getUint16Array(data, byteCount, triangleCount * 3);
 			byteCount += triangleCount * 3 * 2;
 
-			
-
-			var highest = 0;
-	        for (i = 0; i < indices.length; ++i) {
-	            var code = indices[i];
-	            indices[i] = highest - code;
-	            if (code === 0) {
-	                ++highest;
-	            }
-	        }
+			indices = highwaterDecode(indices);
 
 	        
 	        var westVertexCount = getUint32(data,byteCount);
@@ -93,27 +84,65 @@ var qmesh = qmesh || {};
 	        var westIndices = getUint16Array(data,byteCount,westVertexCount);
 	        byteCount += UINT16_BYTE_SIZE * westVertexCount;
 
+			// westIndices = highwaterDecode(westIndices);
+			console.log(westIndices);
+
 			var southVertexCount= getUint32(data, byteCount);
 	        byteCount += UINT32_BYTE_SIZE;
 	        var southIndices = getUint16Array(data, byteCount, southVertexCount);
 	        byteCount += UINT16_BYTE_SIZE * southVertexCount;
+	        console.log(southIndices);
 			
+	        // southIndices = highwaterDecode(southIndices);
+
 			var eastVertexCount = getUint32(data, byteCount);
 	        byteCount += UINT32_BYTE_SIZE;
 	        var eastIndices = getUint16Array(data, byteCount, eastVertexCount);
 	        byteCount += UINT16_BYTE_SIZE * eastVertexCount;
-	        
+	        // eastIndices = highwaterDecode(eastIndices);
+	        console.log(eastIndices);
+
 	        var northVertexCount = getUint32(data, byteCount);
 	        byteCount += UINT32_BYTE_SIZE;
 	        var northIndices = getUint16Array(data, byteCount, northVertexCount);
 	        byteCount += UINT16_BYTE_SIZE * northVertexCount;
-	        
+	        // northIndices = highwaterDecode(northIndices);
+	        console.log(northIndices);
+	        console.log(indices);
 
+	        // appendIndices(indices, westIndices);
+	        // appendIndices(indices, southIndices);
+	        // appendIndices(indices, eastIndices);
+	        // appendIndices(indices, northIndices);
+	        console.log(indices);
 
 	        return {"u" : uArray, "v": vArray, "heights": heightArray, "indices" : indices}
 	        //var geom = buildGeometry(uArray, vArray, heightArray, indices);
 
 
+	 	}
+
+	 	function appendIndices(indices, newIndices) {
+	 		console.log(indices.constructor === Array);
+	        for (var i = 0; i<newIndices.length; i++) {
+	        	indices.push(newIndices[i]);
+	        }
+
+	 	}
+
+	 	function highwaterDecode(indices) {
+
+	 		var arr = [];
+
+			var highest = 0;
+	        for (i = 0; i < indices.length; ++i) {
+	            var code = indices[i];
+	            arr.push(highest - code);
+	            if (code === 0) {
+	                ++highest;
+	            }
+	        }
+	        return arr;
 	 	}
 
 

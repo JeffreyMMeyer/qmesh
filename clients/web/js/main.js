@@ -14,15 +14,17 @@
  		var geometry = new THREE.Geometry();
 
  		for (var i = 0; i < u.length; i++) {
- 			geometry.vertices.push(new THREE.Vector3(u[i]/100, v[i]/100, heights[i]/100));
+ 			geometry.vertices.push(new THREE.Vector3(u[i]/100, v[i]/100, heights[i]/1000));
  		}
 
  		for (var i = 0; i < indices.length; i+=3) {
-			geometry.faces.push(new THREE.Face3(indices[i-2], indices[i-1], indices[i]));				
+			geometry.faces.push(new THREE.Face3(indices[i], indices[i+1], indices[i+2]));				
  		}
+ 			
+		// geometry.faces.push(new THREE.Face3(3,2,1));
 
-		// geometry.computeFaceNormals();
-		// geometry.computeVertexNormals();
+		geometry.computeFaceNormals();
+		geometry.computeVertexNormals();
 
 		return geometry;
 
