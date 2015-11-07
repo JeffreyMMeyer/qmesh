@@ -14,7 +14,7 @@
  		var geometry = new THREE.Geometry();
 
  		for (var i = 0; i < u.length; i++) {
- 			geometry.vertices.push(new THREE.Vector3(u[i]/100, v[i]/100, heights[i]/1000));
+ 			geometry.vertices.push(new THREE.Vector3(u[i]/100, v[i]/100, heights[i]/200));
  		}
 
  		for (var i = 0; i < indices.length; i+=3) {

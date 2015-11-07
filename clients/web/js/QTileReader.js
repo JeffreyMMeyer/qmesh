@@ -19,6 +19,8 @@ var qmesh = qmesh || {};
 		var nw = getTileBounds(xtile, ytile, zoom);
 		var se = getTileBounds(xtile+1, ytile+1, zoom);
 
+		console.log(nw,se);
+
 		function readTileFromUrl(url) {
 			var tms = url.match('/(\d+/\d+/\d+)/');
 			var tmsArray = tms.split('/');
@@ -41,7 +43,7 @@ var qmesh = qmesh || {};
 
 			var vertexCount = getUint32(data, byteCount);
 			byteCount += UINT32_BYTE_SIZE;
-console.log(vertexCount);
+
 			var uArray = getUint16Array(data, byteCount, vertexCount);
 			byteCount += vertexCount * UINT16_BYTE_SIZE;
 
@@ -69,7 +71,7 @@ console.log(vertexCount);
 	            byteCount += (2 - (byteCount % 2));
 	        }
 
-			console.log(uArray, vArray, heightArray);
+
 	        var triangleCount = getUint32(data, byteCount);
 	        byteCount += UINT32_BYTE_SIZE;
 
@@ -85,13 +87,12 @@ console.log(vertexCount);
 	        byteCount += UINT16_BYTE_SIZE * westVertexCount;
 
 			// westIndices = highwaterDecode(westIndices);
-			console.log(westIndices);
+
 
 			var southVertexCount= getUint32(data, byteCount);
 	        byteCount += UINT32_BYTE_SIZE;
 	        var southIndices = getUint16Array(data, byteCount, southVertexCount);
 	        byteCount += UINT16_BYTE_SIZE * southVertexCount;
-	        console.log(southIndices);
 			
 	        // southIndices = highwaterDecode(southIndices);
 
@@ -100,21 +101,13 @@ console.log(vertexCount);
 	        var eastIndices = getUint16Array(data, byteCount, eastVertexCount);
 	        byteCount += UINT16_BYTE_SIZE * eastVertexCount;
 	        // eastIndices = highwaterDecode(eastIndices);
-	        console.log(eastIndices);
 
 	        var northVertexCount = getUint32(data, byteCount);
 	        byteCount += UINT32_BYTE_SIZE;
 	        var northIndices = getUint16Array(data, byteCount, northVertexCount);
 	        byteCount += UINT16_BYTE_SIZE * northVertexCount;
 	        // northIndices = highwaterDecode(northIndices);
-	        console.log(northIndices);
-	        console.log(indices);
-
-	        // appendIndices(indices, westIndices);
-	        // appendIndices(indices, southIndices);
-	        // appendIndices(indices, eastIndices);
-	        // appendIndices(indices, northIndices);
-	        console.log(indices);
+	        
 
 	        return {"u" : uArray, "v": vArray, "heights": heightArray, "indices" : indices}
 	        //var geom = buildGeometry(uArray, vArray, heightArray, indices);
@@ -179,6 +172,7 @@ console.log(vertexCount);
 			var lat_deg = lat_rad * 180.0 / Math.PI;
 			return { lon: lon_deg, lat: lat_deg};
 	 	}
+
 	 	function getUint32Array(data, startPos, count) {
 	 		return new Uint32Array(data.slice(startPos, startPos + 4*count));
 	 	}

@@ -11,8 +11,8 @@
 
 		function init(geometry) {
 
-			HEIGHT = 400;
-			WIDTH = 600;
+			HEIGHT = $('#three').height();
+			WIDTH = $('#three').width();
 			windowHalfX = WIDTH / 2;
 			windowHalfY = HEIGHT / 2;
 
@@ -63,11 +63,6 @@
 			edgesGeom.vertices.push(new THREE.Vector3(max,0,0));
 			edgesGeom.vertices.push(new THREE.Vector3(max, max,0));
 
-
-			edgestGeom.vertices.push(new THREE.Vector3(0,0,150));
-			edgestGeom.vertices.push(new THREE.Vector3(0,max,150));
-			edgestGeom.vertices.push(new THREE.Vector3(max,0,150));
-			edgestGeom.vertices.push(new THREE.Vector3(max, max,150));
 
 			// edgestGeom.faces.push(new THREE.Face3(2,1,0));
 			// edgestGeom.faces.push(new THREE.Face3(3,2,0));
