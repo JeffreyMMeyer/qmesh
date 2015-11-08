@@ -79,7 +79,7 @@
 			var material = new THREE.PointsMaterial({color: 'yellow', size: 20});
 			// var material = new THREE.MeshBasicMaterial({color: 'red'});
 			var edgestParticles = new THREE.Points(edgestGeom, material);
-			var wireFrame = false;
+			var wireFrame = true;
         	var material = new THREE.MeshLambertMaterial( {wireframe: wireFrame, color: 0x0000ff} );
 			scene.add(edgesParticles);
 			scene.add(edgestParticles);
