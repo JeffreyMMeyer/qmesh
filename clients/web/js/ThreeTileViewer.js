@@ -9,7 +9,21 @@
 			nearPlane, farPlane,
 			parameterCount, particles;
 
-		function init(geometry) {
+		var origin = null;
+
+		function init(geometry, nw, se) {
+			var x = 0;
+			var y = 0;
+			if (!origin) {
+				origin = {
+					nw : nw,
+					se : se
+				}
+			} else {
+				x = origin.nw - nw;
+				y = origin.se - se;
+			}
+			
 
 			HEIGHT = $('#three').height();
 			WIDTH = $('#three').width();
@@ -79,7 +93,7 @@
 			var material = new THREE.PointsMaterial({color: 'yellow', size: 20});
 			// var material = new THREE.MeshBasicMaterial({color: 'red'});
 			var edgestParticles = new THREE.Points(edgestGeom, material);
-			var wireFrame = true;
+			var wireFrame = false;
         	var material = new THREE.MeshLambertMaterial( {wireframe: wireFrame, color: 0x0000ff} );
 			scene.add(edgesParticles);
 			scene.add(edgestParticles);
@@ -95,7 +109,8 @@
         spotLight.castShadow = true;
         scene.add(spotLight);
 
-
+        	geometry.x = x;
+        	geometry.y = y;
 			particles = new THREE.Mesh(geometry, material);
 
 			scene.add(particles);
@@ -119,9 +134,9 @@
 			renderer.render(scene, camera);		
 		}
 	 	
-	 	function showTile(geometry) {
+	 	function showTile(geometry, nw, se) {
 
-			init(geometry);
+			init(geometry, nw, se);
 			animate();
 
 	 	}
@@ -135,4 +150,3 @@
 
 
 })(qmesh);
-	

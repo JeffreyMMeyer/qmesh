@@ -61,14 +61,14 @@
 <script>
 	var url = "http://assets.agi.com/stk-terrain/world/13/8498/6900.terrain?v=1.16389.0";
 	var url = "http://assets.agi.com/stk-terrain/world/14/8478/11768.terrain?v=1.16389.0";
-	// var url = "http://assets.agi.com/stk-terrain/world/14/8479/11768.terrain?v=1.16389.0";
-	var url = "http://assets.agi.com/stk-terrain/world/14/8478/11767.terrain?v=1.16389.0";
+	var url = "http://assets.agi.com/stk-terrain/world/14/8479/11768.terrain?v=1.16389.0";
+	var url2 = "http://assets.agi.com/stk-terrain/world/14/8478/11767.terrain?v=1.16389.0";
 	// var url = "http://assets.agi.com/stk-terrain/world/8/258/217.terrain?v=1.16389.0";
 	var qReader = new qmesh.TileReader();
 	var tileViewer = new qmesh.TileViewer();
 
 
-	function getRequest() {
+	function getRequest(url) {
 		var xhr = new XMLHttpRequest();
 		
 		xhr.onload = function(e) {
@@ -83,12 +83,14 @@
  	function handleTileResponse(data) {
  		var tile = qReader.parseTile(data);
  		var geometry = buildGeometry(tile.u, tile.v, tile.heights, tile.indices);
- 		tileViewer.showTile(geometry);
+ 		
+ 		tileViewer.showTile(geometry, tile.nw, tile.se);
 
  	}
 
  	function load4Tiles() {
- 		
+ 		handleTileResponse(data);
+
  	}
 
  	function loadTiles() {
@@ -97,7 +99,7 @@
 
  	
 
-getRequest();
+getRequest(url);
 
 </script>
 

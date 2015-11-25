@@ -5,13 +5,11 @@ var qmesh = qmesh || {};
 
 	ns.TileReader = function() {
 
-
 		var UINT16_BYTE_SIZE = 2;
 		var UINT32_BYTE_SIZE = 4;
 		var FLOAT64_BYTE_SIZE = 8;
 		var FLOAT32_BYTE_SIZE = 4;
 
-		
 		var xtile = 2762;
 		var ytile = 1566;
 		var zoom = 12;
@@ -19,7 +17,6 @@ var qmesh = qmesh || {};
 		var nw = getTileBounds(xtile, ytile, zoom);
 		var se = getTileBounds(xtile+1, ytile+1, zoom);
 
-		console.log(nw,se);
 
 		function readTileFromUrl(url) {
 			var tms = url.match('/(\d+/\d+/\d+)/');
@@ -109,7 +106,14 @@ var qmesh = qmesh || {};
 	        // northIndices = highwaterDecode(northIndices);
 	        
 
-	        return {"u" : uArray, "v": vArray, "heights": heightArray, "indices" : indices}
+	        return {
+	        	"header" : header,
+	        	"u" : uArray, 
+	        	"nw" : nw,
+	        	"se" : se,
+	        	"v": vArray, 
+	        	"heights": heightArray, 
+	        	"indices" : indices}
 	        //var geom = buildGeometry(uArray, vArray, heightArray, indices);
 
 
