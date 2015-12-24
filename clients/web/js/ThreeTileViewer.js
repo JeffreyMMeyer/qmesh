@@ -51,7 +51,7 @@
 	
 			controls = new THREE.TrackballControls( camera );
 
-			controls.rotateSpeed = 1.0;
+			controls.rotateSpeed = 5.0;
 			controls.zoomSpeed = 1.2;
 			controls.panSpeed = 0.8;
 
@@ -94,32 +94,41 @@
 			// var material = new THREE.MeshBasicMaterial({color: 'red'});
 			var edgestParticles = new THREE.Points(edgestGeom, material);
 			var wireFrame = false;
-        	var material = new THREE.MeshLambertMaterial( {wireframe: wireFrame, color: 0x0000ff} );
 			scene.add(edgesParticles);
 			scene.add(edgestParticles);
 			// var material = new THREE.PointsMaterial({size: 2});
 
 
-        var ambientLight = new THREE.AmbientLight(0xaaaaaa);
-        scene.add(ambientLight);
+	        var ambientLight = new THREE.AmbientLight(0x343434);
+	        scene.add(ambientLight);
 
-        // add spotlight for the shadows
-        var spotLight = new THREE.SpotLight(0xafaffa);
-        spotLight.position.set(500, 20, 500);
-        spotLight.castShadow = true;
-        scene.add(spotLight);
+	        // add spotlight for the shadows
+	        var spotLight = new THREE.SpotLight(0xafaffa);
+	        spotLight.position.set(500, 20, 500);
+	        spotLight.castShadow = true;
+	        scene.add(spotLight);
 
         	geometry.x = x;
         	geometry.y = y;
-			particles = new THREE.Mesh(geometry, material);
+        	addMesh(geometry);
 
-			scene.add(particles);
 			renderer = new THREE.WebGLRenderer(); 				/*	Rendererererers particles.	*/
 			renderer.setPixelRatio(window.devicePixelRatio);	/*	Probably 1; unless you're fancy.	*/
 			renderer.setSize(WIDTH, HEIGHT);					/*	Full screen baby Wooooo!	*/
 			renderer.setClearColor(0xffffff, 0);
 			container.append(renderer.domElement);		/* Let's add all this crazy junk to the page.	*/
 
+		}
+
+		function addMesh(geometry) {
+
+        	var material = new THREE.MeshLambertMaterial(  );
+
+	 		geometry.computeFaceNormals();
+			geometry.computeVertexNormals();    // requires correct face normals
+
+			var mesh = new THREE.Mesh(geometry, material);
+			scene.add(mesh);
 		}
 
 
@@ -142,7 +151,7 @@
 	 	}
 
 	 	return {
-	 		showTile
+	 		showTile: showTile
 	 	}
 
 	};
