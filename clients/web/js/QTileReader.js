@@ -27,97 +27,7 @@ var qmesh = qmesh || {};
         function zigZagDecode(value) {
             return (value >> 1) ^ (-(value & 1));
         }
-	
-	 	function parseTile(data, x, y, z) {
-			var byteCount = 0;
-			var length = data.byteLength;
-
-			var qtile = {};
-	 		
-	 		var header = getHeader(data, byteCount);
-			byteCount += 88;
-	        $('#tile-header-content').append($(headerTemplate(header)));
-
-			var vertexCount = getUint32(data, byteCount);
-			byteCount += UINT32_BYTE_SIZE;
-
-			var uArray = getUint16Array(data, byteCount, vertexCount);
-			byteCount += vertexCount * UINT16_BYTE_SIZE;
-
-			var vArray = getUint16Array(data, byteCount, vertexCount);
-			byteCount += vertexCount * UINT16_BYTE_SIZE;
-
-			var heightArray = getUint16Array(data, byteCount, vertexCount);
-			byteCount += vertexCount * UINT16_BYTE_SIZE;
-
-	        var i;
-	        var u = 0;
-	        var v = 0;
-	        var height = 0;
-
-	        for (i = 0; i < uArray.length; ++i) {
-	            u += zigZagDecode(uArray[i]);
-	            v += zigZagDecode(vArray[i]);
-	            height += zigZagDecode(heightArray[i]);
-
-	            uArray[i] = u;
-	            vArray[i] = v;
-	            heightArray[i] = height;
-	        }
-	 		if (byteCount % 2 !== 0) {
-	            byteCount += (2 - (byteCount % 2));
-	        }
-
-
-	        var triangleCount = getUint32(data, byteCount);
-	        byteCount += UINT32_BYTE_SIZE;
-
-			var indices = getUint16Array(data, byteCount, triangleCount * 3);
-			byteCount += triangleCount * 3 * 2;
-
-			indices = highwaterDecode(indices);
-
-	        
-	        var westVertexCount = getUint32(data,byteCount);
-	        byteCount += UINT32_BYTE_SIZE;
-	        var westIndices = getUint16Array(data,byteCount,westVertexCount);
-	        byteCount += UINT16_BYTE_SIZE * westVertexCount;
-
-			// westIndices = highwaterDecode(westIndices);
-
-
-			var southVertexCount= getUint32(data, byteCount);
-	        byteCount += UINT32_BYTE_SIZE;
-	        var southIndices = getUint16Array(data, byteCount, southVertexCount);
-	        byteCount += UINT16_BYTE_SIZE * southVertexCount;
-			
-	        // southIndices = highwaterDecode(southIndices);
-
-			var eastVertexCount = getUint32(data, byteCount);
-	        byteCount += UINT32_BYTE_SIZE;
-	        var eastIndices = getUint16Array(data, byteCount, eastVertexCount);
-	        byteCount += UINT16_BYTE_SIZE * eastVertexCount;
-	        // eastIndices = highwaterDecode(eastIndices);
-
-	        var northVertexCount = getUint32(data, byteCount);
-	        byteCount += UINT32_BYTE_SIZE;
-	        var northIndices = getUint16Array(data, byteCount, northVertexCount);
-	        byteCount += UINT16_BYTE_SIZE * northVertexCount;
-	        // northIndices = highwaterDecode(northIndices);
-	        
-
-	        return {
-	        	"header" : header,
-	        	"u" : uArray, 
-	        	"nw" : nw,
-	        	"se" : se,
-	        	"v": vArray, 
-	        	"heights": heightArray, 
-	        	"indices" : indices}
-	        //var geom = buildGeometry(uArray, vArray, heightArray, indices);
-
-
-	 	}
+		
 
 	 	function appendIndices(indices, newIndices) {
 	 		console.log(indices.constructor === Array);
@@ -147,6 +57,7 @@ var qmesh = qmesh || {};
 	    	// REF CESIUM SOURCE CODE
 	        return (value >> 1) ^ (-(value & 1));
 	    }
+
 	 	function getHeader(data, byteCount) {
 
 			return {
@@ -202,8 +113,106 @@ var qmesh = qmesh || {};
 	 		return getFloat32Array(data, startPos, 1)[0]; 		
 	 	}
 
+	 	function processTile(x,y,zoom, data) {
+
+	 	}
+
+
+	 	function parseTile(data, x, y, z) {
+			var byteCount = 0;
+			var length = data.byteLength;
+
+			var qtile = {};
+	 		
+	 		var header = getHeader(data, byteCount);
+			byteCount += 88;
+	        $('#tile-header-content').append($(headerTemplate(header)));
+
+			var vertexCount = getUint32(data, byteCount);
+			byteCount += UINT32_BYTE_SIZE;
+
+			var uArray = getUint16Array(data, byteCount, vertexCount);
+			byteCount += vertexCount * UINT16_BYTE_SIZE;
+
+			var vArray = getUint16Array(data, byteCount, vertexCount);
+			byteCount += vertexCount * UINT16_BYTE_SIZE;
+
+			var heightArray = getUint16Array(data, byteCount, vertexCount);
+			byteCount += vertexCount * UINT16_BYTE_SIZE;
+
+	        var i;
+	        var u = 0;
+	        var v = 0;
+	        var height = 0;
+
+	        for (i = 0; i < uArray.length; ++i) {
+	            u += zigZagDecode(uArray[i]);
+	            v += zigZagDecode(vArray[i]);
+	            height += zigZagDecode(heightArray[i]);
+
+	            uArray[i] = u;
+	            vArray[i] = v;
+	            heightArray[i] = height;
+	        }
+	        
+	 		if (byteCount % 2 !== 0) {
+	            byteCount += (2 - (byteCount % 2));
+	        }
+
+
+	        var triangleCount = getUint32(data, byteCount);
+	        byteCount += UINT32_BYTE_SIZE;
+
+			var indices = getUint16Array(data, byteCount, triangleCount * 3);
+			byteCount += triangleCount * 3 * 2;
+
+			indices = highwaterDecode(indices);
+
+	        
+	        var westVertexCount = getUint32(data,byteCount);
+	        byteCount += UINT32_BYTE_SIZE;
+	        var westIndices = getUint16Array(data,byteCount,westVertexCount);
+	        byteCount += UINT16_BYTE_SIZE * westVertexCount;
+
+			// westIndices = highwaterDecode(westIndices);
+
+
+			var southVertexCount= getUint32(data, byteCount);
+	        byteCount += UINT32_BYTE_SIZE;
+	        var southIndices = getUint16Array(data, byteCount, southVertexCount);
+	        byteCount += UINT16_BYTE_SIZE * southVertexCount;
+			
+	        // southIndices = highwaterDecode(southIndices);
+
+			var eastVertexCount = getUint32(data, byteCount);
+	        byteCount += UINT32_BYTE_SIZE;
+	        var eastIndices = getUint16Array(data, byteCount, eastVertexCount);
+	        byteCount += UINT16_BYTE_SIZE * eastVertexCount;
+	        // eastIndices = highwaterDecode(eastIndices);
+
+	        var northVertexCount = getUint32(data, byteCount);
+	        byteCount += UINT32_BYTE_SIZE;
+	        var northIndices = getUint16Array(data, byteCount, northVertexCount);
+	        byteCount += UINT16_BYTE_SIZE * northVertexCount;
+	        // northIndices = highwaterDecode(northIndices);
+	        
+
+	        return {
+	        	"header" : header,
+	        	"u" : uArray, 
+	        	"nw" : nw,
+	        	"se" : se,
+	        	"v": vArray, 
+	        	"heights": heightArray, 
+	        	"indices" : indices}
+	        //var geom = buildGeometry(uArray, vArray, heightArray, indices);
+
+
+	 	}
+
 	 	return {
-	 		parseTile : parseTile
+	 		parseTile : parseTile, 
+	 		processTile : processTile
 	 	}
 	 }
 
