@@ -9,7 +9,7 @@ Vagrant.configure("2") do |config|
     
     config.vm.define "ubuntu" do |ubuntu|
     
-        ubuntu.vm.box = "trusty_daily"
+        ubuntu.vm.box = "ubuntu/trusty"
         
         ubuntu.vm.network :forwarded_port, host: 8011, guest: 80 # Apache
         ubuntu.vm.network :forwarded_port, host: 9211, guest: 9200 # ElasticSearch
