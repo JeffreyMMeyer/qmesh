@@ -130,10 +130,10 @@ var qmesh = qmesh || {};
 
 			var vertexCount = getUint32(data, byteCount);
 			byteCount += UINT32_BYTE_SIZE;
-
+			
 			var uArray = getUint16Array(data, byteCount, vertexCount);
 			byteCount += vertexCount * UINT16_BYTE_SIZE;
-
+			
 			var vArray = getUint16Array(data, byteCount, vertexCount);
 			byteCount += vertexCount * UINT16_BYTE_SIZE;
 
@@ -204,7 +204,8 @@ var qmesh = qmesh || {};
 	        	"se" : se,
 	        	"v": vArray, 
 	        	"heights": heightArray, 
-	        	"indices" : indices}
+	        	"indices" : indices
+	        }
 	        //var geom = buildGeometry(uArray, vArray, heightArray, indices);
 
 

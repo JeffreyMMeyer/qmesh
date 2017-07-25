@@ -41,27 +41,27 @@
 
 			camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
 			camera.position.z = cameraZ;
-				camera.position.x=-300;
-				camera.position.y=-300;
+			camera.position.x=-300;
+			camera.position.y=-300;
 
 			scene = new THREE.Scene();
 
 			container = $('#three');
 
 	
-			controls = new THREE.TrackballControls( camera );
+			controls = new THREE.OrbitControls( camera );
 
-			controls.rotateSpeed = 5.0;
-			controls.zoomSpeed = 1.2;
-			controls.panSpeed = 0.8;
+			// controls.rotateSpeed = 5.0;
+			// controls.zoomSpeed = 1.2;
+			// controls.panSpeed = 0.8;
 
-			controls.noZoom = false;
-			controls.noPan = false;
+			// controls.noZoom = false;
+			// controls.noPan = false;
 
-			controls.staticMoving = true;
-			controls.dynamicDampingFactor = 0.3;
+			// controls.staticMoving = true;
+			// controls.dynamicDampingFactor = 0.3;
 
-			controls.keys = [ 65, 83, 68 ];
+			// controls.keys = [ 65, 83, 68 ];
 
 			controls.addEventListener( 'change', render );
 
@@ -123,11 +123,12 @@
 		function addMesh(geometry) {
 
         	var material = new THREE.MeshLambertMaterial(  );
-
-	 		geometry.computeFaceNormals();
-			geometry.computeVertexNormals();    // requires correct face normals
+			console.log(geometry);
+	 	// 	geometry.computeFaceNormals();
+			// geometry.computeVertexNormals();    // requires correct face normals
 
 			var mesh = new THREE.Mesh(geometry, material);
+			console.log(geometry);
 			scene.add(mesh);
 		}
 
