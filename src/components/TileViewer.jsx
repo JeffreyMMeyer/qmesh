@@ -1,8 +1,16 @@
 import React, {Component} from 'react';
 import 'three';
 import 'three/OrbitControls';
-import QTile from '../tiles/QuantizedMeshTile.jsx';
+import QTile from '../tiles/QuantizedMeshTile.js';
 
+function getTileBounds(tx, ty, zoom) {
+    //http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Tile_numbers_to_lon..2Flat.
+    var n = Math.pow(2, zoom);
+    var lon_deg = tx / n * 360.0 -180.0;
+    var lat_rad = Math.atan(Math.sinh(Math.PI * (1 - 2 * ty / n)));
+    var lat_deg = lat_rad * 180.0 / Math.PI;
+    return { lon: lon_deg, lat: lat_deg};
+}
 
 export default class TileViewer extends Component {
 
@@ -17,29 +25,21 @@ export default class TileViewer extends Component {
     setupCamera(fieldOfView, aspectRatio, nearPlane, farPlane) {
         // return new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
     }
-
-    // setupScene() {
-
-    // }
-
+    
     animate() { 
-        // this.state.camera.lookAt(this.state.scene.position);
         this.state.renderer.render(this.state.scene, this.state.camera);
-
-        // this.state.controls.update();
     }
     
 
     constructor(props, context) {
         super(props, context);
+
         var fieldOfView = 45;
         var height = this.props.height;
         var width = this.props.width;
         var aspectRatio = width/height;
         var nearPlane = 1;
         var farPlane = 10000;
-
-
 
         var renderer = new THREE.WebGLRenderer();               /*  Rendererererers particles.  */
         renderer.setPixelRatio(window.devicePixelRatio);    /*  Probably 1; unless you're fancy.    */
@@ -54,50 +54,16 @@ export default class TileViewer extends Component {
         camera.position.y=-300;
 
         this.animate = this.animate.bind(this);
+        this.hasTileMesh = this.hasTileMesh.bind(this);
 
         this.state = {
             renderer : renderer,
             scene: scene,
-            camera: camera
+            camera: camera,
+            tileMeshes : {}
         }
 
-
     }
-
-    // // construct the position vector here, because if we use 'new' within render,
-    // // React will think that things have changed when they have not.
-    // this.cameraPosition = new THREE.Vector3(0, 0, 522);
-
-    // this.state = {
-    //     fieldOfView: 75,
-    //     cubeRotation: new THREE.Euler(),
-    //     cameraPosition: new THREE.Vector3(0,0,5),
-    //     height: 900,
-    //     width: 1500
-    // };
-
-    // this._onAnimate = () => {
-    //   // we will get this callback every frame
-
-    //   // pretend cubeRotation is immutable.
-    //   // this helps with updates and pure rendering.
-    //   // React will be sure that the rotation has now updated.
-    //   this.setState({
-    //     cubeRotation: new THREE.Euler(
-    //       this.state.cubeRotation.x + 0.001,
-    //       this.state.cubeRotation.y + 0.001,
-    //       0
-    //     ),
-    //   });
-    // };
-  // }
-
-    // render() {
-    //     this.state.camera.lookAt(scene.position);
-    //     this.state.renderer.render(scene, camera);     
-    // }
-
-
 
     componentDidMount() {
 
@@ -114,41 +80,97 @@ export default class TileViewer extends Component {
 
         var controls = new THREE.OrbitControls( this.state.camera, this.state.renderer.domElement );
             controls.addEventListener( 'change', this.animate );
-        // controls.addEventListener( 'change', this.state.render ); // remove when using animation loop
-        // this.setState({
-        //     controls: controls
-        // });
-        // enable animation loop when using damping or autorotation
-        //controls.enableDamping = true;
-        //controls.dampingFactor = 0.25;
-        // controls.enableZoom = false;
 
         requestAnimationFrame(this.animate);
 
     }
 
-    componentDidUpdate() {
+    appendTileMesh(qtile, tileKey, callback) {
 
-        var qtile = this.props.qtile;
-        console.log(qtile);
+        console.log(qtile.header.bytes);
         var geometry = new THREE.Geometry();
         geometry.vertices = qtile.vertices;
         geometry.faces = qtile.faces;        
         geometry.computeFaceNormals();
         geometry.computeVertexNormals();
 
+        console.log(tileKey);
+        var xyz = tileKey.split("/");
+        console.log(xyz);
+        var bounds = getTileBounds(xyz[0], xyz[1], xyz[2]);
+        if (xyz[1] == 6895) {
+            geometry.translate( 0, -327,0 ); 
+            if (xyz[0] == 8474) {
+                geometry.translate(-327,0,0);
+            } else if (xyz[0] == 8473) {
+                geometry.translate(-(2*327),0,0);
+
+            }
+        } else if(xyz[0] == 8474) {
+                geometry.translate(-327,0,0);
+        } else if (xyz[0] == 8473) {
+            geometry.translate(-(2*327),0,0);
+            
+        }
+        console.log(bounds);
+        //     geometry.translate( -327,0,0 ); 
+        // }
 
         var material = new THREE.MeshLambertMaterial();
-
         var mesh = new THREE.Mesh(geometry, material);
-        console.log(this.state.scene);
+
         this.state.scene.add(mesh);
+        callback(mesh.id);
+
+    }
+
+    addTileMeshReference(tilesetKey, tileKey, threeId) {
+        let tMeshes = this.state.tileMeshes;
+        if (!tMeshes.hasOwnProperty(tilesetKey)) {
+            tMeshes[tilesetKey] = {}
+        }
+        if (!tMeshes[tilesetKey].hasOwnProperty(tileKey)) {
+            tMeshes[tilesetKey][tileKey] = threeId;
+        }
+    }
+
+
+    hasTileMesh(tilesetKey, tileKey) {
+
+        let tMeshes = this.state.tileMeshes;
+        if (tMeshes.hasOwnProperty(tilesetKey)) {
+            if (tMeshes[tilesetKey][tileKey]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    componentDidUpdate() {
+
+        var tiles = this.props.tiles;
+
+        for (var tilesetKey in tiles) {
+            let tileSet = tiles[tilesetKey];
+
+            for (var coordKey in tileSet) {
+
+                if (!this.hasTileMesh(tilesetKey, coordKey)) {
+                    this.appendTileMesh(tileSet[coordKey], coordKey, (threeId) => {
+                        this.addTileMeshReference(tilesetKey, coordKey, threeId);                        
+                    });
+                }
+
+            }
+        }
+
+
     }
 
 
     render() {
         return (
-            <div style={{width: this.props.width, height: this.props.height}} ref="threeview"></div>
+            <div style={{ marginLeft: '350px', width: this.props.width, height: this.props.height}} ref="threeview"></div>
         );
     }
 }

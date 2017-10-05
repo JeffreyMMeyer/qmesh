@@ -1,6 +1,6 @@
 import c from '../utils/conversion';
 import cnst from '../utils/constants';
-import ThreeQuantizedMeshTile from '../tiles/QuantizedMeshTile.jsx';
+import ThreeQuantizedMeshTile from '../tiles/QuantizedMeshTile.js';
 
 const parseTile = (data) => {
 
@@ -20,7 +20,7 @@ const parseTile = (data) => {
 
     var heightArray = c.getUint16Array(data, byteCount, vertexCount);
     byteCount += vertexCount * cnst.UINT16_BYTE_SIZE;
-
+    
     var i;
     var u = 0;
     var v = 0;

@@ -5,6 +5,11 @@ import React, {Component} from 'react';
 import QMTileReader from './readers/QuantiziedMeshTileReader.js';
 import LeftPane from './components/LeftPane.jsx';
 
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import injectTapEventPlugin from 'react-tap-event-plugin'; 
+
+injectTapEventPlugin();
+
 const url = "http://assets.agi.com/stk-terrain/world/13/8498/6900.terrain?v=1.16389.0";
 
 function getRequest(url, callback) {
@@ -32,53 +37,106 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            qtiles : [],
+            tiles : {},
             bbox : null,
             x: null,
             y: null,
             z: null, 
-            qtile: null
+            qtile: null,
+            tempCoordinates: {
+                x : null,
+                y : null,
+                z : null
+            }
         };
-
+        this.setCoordinate = this.setCoordinate.bind(this);
+        this.buildUrl = this.buildUrl.bind(this);
 
     }       
 
-    componentDidMount() {
+    buildUrl(baseUrl, x,y,z) {        
+        return baseUrl + "/" + z + "/" + x + "/" + y + ".terrain?v=1.16389.0"; ///8498/6900.terrain?v=1.16389.0";
+    }
 
+    componentDidMount() {
+        let cb = function(data) {
+            console.log(data);
+            console.log("loaded");
+        }
+
+
+        // 14/16950/13793
+        // this.loadTile(14,16959,13790, cb)
+        // this.loadTile(8497,6900,13, cb)
+        // this.loadTile(8498,6901,13, cb)
+        // this.loadTile(14,8477,11768, cb);
+        this.loadTile(13,8475,6895, cb);
+        this.loadTile(13,8474,6896, cb);
+        this.loadTile(13,8474,6895, cb);
+        this.loadTile(13,8473,6896, cb);
+        this.loadTile(13,8473,6895, cb);
+    }
+
+    loadForBboxZoom(bbox, zoom) {
+        
+    }
+
+    loadTile(z, x,y, cb) {
+        var baseUrl = "http://assets.agi.com/stk-terrain/world"
         var context = this;
-        getRequest(url, function(data) {
+        getRequest(this.buildUrl(baseUrl, x,y,z), function(data) {
             var tile = QMTileReader.parseTile(data); 
-            context.setState({qtile : tile});
+            var tiles = context.state.tiles;
+
+            let key = x + "/" + y + "/" + z;
+
+            if (!tiles[baseUrl]) {
+                tiles[baseUrl] = {}
+            }
+            tiles[baseUrl][key] = tile;
+            console.log("tiles")
+            context.setState({tiles: tiles});
+            if (cb) {
+                cb(tile); 
+            }
         });
     }
 
+    setCoordinate(coordinate, value) {
+        var coords = this.state.tempCoordinates 
+        coords[coordinate] = value;
 
+        this.setState({
+            tempCoordinates : coords
+        }, function() {
+            let coord = this.state.tempCoordinates;
+            if (coord.x && coord.y && coord.z) {
+                this.loadTile(coord.x, coord.y, coord.z);
+            }
+        }
+        );
+    }
 
     render() {
-        // if (this.state.qtile) {
-        //     console.log("rn")
-            return (
-                <div>
-                    <Header/> 
-                    <LeftPane />
-                    <TileViewer qtile={this.state.qtile} height={600} width={800}/>
 
-                </div>);
-        // }
-        // else {
-        //     return (<div>Loading...</div>);
-        // }
+        return (
+            <div>
+                <Header/> 
+                <LeftPane setCoordinate={this.setCoordinate}/>
+                <TileViewer tiles={this.state.tiles} qtile={this.state.qtile} height={500} width={800}/>
+            </div>
+        ); 
     }
 }
 
-function handleTileResponse(data) {
-
-}
 
 
 
 ReactDOM.render(
-    <App />,
+
+  <MuiThemeProvider>
+    <App />
+  </MuiThemeProvider>,
   document.getElementById('root')
 );
 
