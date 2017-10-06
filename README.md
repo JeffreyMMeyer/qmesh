@@ -6,14 +6,34 @@ A viewer for the 3D Tiles format Quantizied Mesh Tiles, used by among others Ces
 This project was first made as an attempt to decode 3D Tiles manually, which is pretty much the only thing the 1st version does. Now I will start over and create a Redux-React app out of it.
 
 # Redux app
-I haven't really been involved in Redux-based development since it took off in 2016, but have always wanted to do so. So the idea is to try to do so for this application, as the application state is quite simple. I will be following this blog post: https://medium.com/@rajaraodv/step-by-step-guide-to-building-react-redux-apps-using-mocks-48ca0f47f9a
+I haven't really looked at Redux-based apps since it took off in 2016, but have always wanted to do so. Therefore I decided to have a go at it in the context of this very simple application. I will be following [this Medium blog post](https://medium.com/@rajaraodv/step-by-step-guide-to-building-react-redux-apps-using-mocks-48ca0f47f9a).
 
-That blog post of course doesn't deal with requests and all those async problems we run into in those situations, so we will try to mock it up first, then add some middleware to handle actual request calls later on.
+This blog post of course doesn't deal with requests and all those async problems we run into in those situations, so we will try to mock it up first, then add some middleware to handle actual request calls later on.
 
-# Redux app steps
+
+# Creating a React-Redux app
+The blog post mentioned above breaks down the development process into specific steps which I find to be very informative when learning a new topic.
+
+```None
+
+    ----------------------------------------------------------
+    |         ------------------------------                  |
+    |  xxx    |                            |     Tile list    |
+    |  yyy    |                            |     Tile 1       |
+    |  zzz    |        Tiles in 3D         |     Tile 2       |
+    |         |                            |     Tile 3       |
+    |         |                            |                  |
+    |         |                            |                  |
+    |         |                            |                  |
+    |         ------------------------------                  |
+    |                                                         |
+    ----------------------------------------------------------
+```
+
+sss
+
 ## Step 1: Write a detailed mock of the Screen
 
--------------------------------------
 |        ----------------           |
 | xxxx   |               | tilelist |
 | yyyy   |               | tile1 x  |
