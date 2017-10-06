@@ -8,14 +8,8 @@ const mapStateToProps = (state) => {
     })
 }
 
-
-
 const mapDispatchToProps = {
-  onRemoveTileClick:  removeTile
-}
-
-const onRemoveTile = (tile) => {
-    console.log(tile);
+    onRemoveTileClick: removeTile
 }
 
 
@@ -23,6 +17,6 @@ const EditableTileList = connect(
   mapStateToProps,
   mapDispatchToProps
 )(TileList)
- 
+
 
 export default EditableTileList

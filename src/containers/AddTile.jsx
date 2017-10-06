@@ -27,7 +27,7 @@ let AddTile = ({ dispatch }) =>  {
     </div>)
 
 }
-
+console.log(AddTile);
 AddTile = connect()(AddTile)
 
 export default AddTile

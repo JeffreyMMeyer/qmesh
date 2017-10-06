@@ -1,10 +1,7 @@
 import React from 'react';
 import TileItem from '../components/TileItem.jsx' 
 
-const TileList = ({ tiles, onRemoveTileClick }) => {
-    console.log(tiles,onRemoveTileClick);
-    return (
-    <ul>
+const TileList = ({ tiles, onRemoveTileClick }) => (<ul>
         {tiles.map(tile =>
         <TileItem
             key={tile.id}
@@ -13,6 +10,6 @@ const TileList = ({ tiles, onRemoveTileClick }) => {
         />
         )}
     </ul>
-    )}
+    )
  
 export default TileList

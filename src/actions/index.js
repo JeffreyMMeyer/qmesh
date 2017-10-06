@@ -11,7 +11,7 @@ export const addTile = (x, y, z) => {
  }
 }
   
-export const setVisibilityFilter = () => {
+export const removeAllTiles = () => {
  return {
     type: 'CLEAR_ALL'
  }
