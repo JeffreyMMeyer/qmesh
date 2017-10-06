@@ -12,7 +12,11 @@ let AddTileForm = ({ dispatch }) =>  {
             if (!input.value.trim()) {
                 return
             }
-            dispatch(addTile(1,2,3))
+            let vals = input.value.split('/');
+            if (vals.length !== 3) {
+                return
+            }
+            dispatch(addTile(vals[0], vals[1], vals[2]))
             input.value = ''
         }}>
             <input ref={node => {

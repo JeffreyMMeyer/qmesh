@@ -17,7 +17,7 @@ export const setVisibilityFilter = () => {
  }
 }
 
-export const remoteTile = (id) => {
+export const removeTile = (id) => {
  return {
     type: 'REMOVE_TILE',
     id

@@ -1,12 +1,18 @@
 import React from 'react'
-import AddTileForm from './AddTileForm.jsx'
+import AddTile from '../containers/AddTile.jsx' 
+import ClearTiles from '../containers/ClearTiles.jsx'
+import EditableTileList from '../containers/EditableTileList.jsx'
+import TileViewer from './TileViewer.jsx'
 
 const App = () =>  { 
 
     return (
             <div>
                 <h1>Qmesh</h1>
-                <AddTileForm />
+                <AddTile />
+                <ClearTiles />
+                <TileViewer />
+                <EditableTileList/>
             </div>
         ) 
 }

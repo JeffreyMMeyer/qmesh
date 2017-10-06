@@ -14,35 +14,25 @@ This blog post of course doesn't deal with requests and all those async problems
 # Creating a React-Redux app
 The blog post mentioned above breaks down the development process into specific steps which I find to be very informative when learning a new topic.
 
-```None
 
-    ----------------------------------------------------------
-    |         ------------------------------                  |
-    |  xxx    |                            |     Tile list    |
-    |  yyy    |                            |     Tile 1       |
-    |  zzz    |        Tiles in 3D         |     Tile 2       |
-    |         |                            |     Tile 3       |
-    |         |                            |                  |
-    |         |                            |                  |
-    |         |                            |                  |
-    |         ------------------------------                  |
-    |                                                         |
-    ----------------------------------------------------------
-```
-
-sss
 
 ## Step 1: Write a detailed mock of the Screen
+```
 
-|        ----------------           |
-| xxxx   |               | tilelist |
-| yyyy   |               | tile1 x  |
-| zzzz   |     tiles     | tile2 x  |
-|        |               |          |
-| add    |               |          |
-| clear  |               |          |
-|        ----------------           |
--------------------------------------
+    -------------------------------------------------------------
+    |  inputs   ------------------------------                  |
+    |  xxx      |                            |     Tile list    |
+    |  yyy      |                            |     Tile 1  x    |
+    |  zzz      |        Tiles in 3D         |     Tile 2  x    |
+    |           |                            |     Tile 3  x    |
+    | Add tile  |                            |                  |
+    | Clear all |                            |                  |
+    |           |                            |                  |
+    |           ------------------------------                  |
+    |                                                           |
+    -------------------------------------------------------------
+```
+
 
 A pretty detailed ascii version of my app: 
 - x, y, z input fields
@@ -67,19 +57,23 @@ State:
 N/A - simple fields with no connection to state
 
 Actions: 
+```
 -   type: "ADD_TILE"
     payload: 
         x: double
         y: double
         z: double
+```
 
 ### 3.2 ClearTiles
 State:
 N/A - although it will affect the Tiles array, it does not need it
 
 Actions:
+```
 -   type: "CLEAR_ALL"
     payload: None
+```
 
 ### 3.3 TileViewer
 State: 
@@ -93,7 +87,9 @@ State:
 - Tiles array
 
 Actions:
--  type: REMOVE_TILE
+```
+-  type: "REMOVE_TILE"
+```
 
 ## Step 4: Create action creators for each action
 
@@ -105,9 +101,7 @@ Actions:
 
 ## Step 5: Write reducers for each action
 
-To begin with we only have one reducer; the tile reducer
-
-it reduces based on the actions listed above, for which it does pretty much what you would expect:
+To begin with we only have one reducer; the tile reducer. It reduces based on the actions listed above, for which it does pretty much what you would expect. Remove tile as follows:
 
 ```
 
