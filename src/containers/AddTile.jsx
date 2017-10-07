@@ -2,6 +2,15 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { addTile } from '../actions'
 import TextField from 'material-ui/TextField'
+import RaisedButton from 'material-ui/RaisedButton'
+
+const style = {
+  margin: 12,
+};
+
+const getTile = () => {
+    // return axios.get("");
+}
 
 let AddTile = ({ dispatch }) =>  {
 
@@ -19,12 +28,15 @@ let AddTile = ({ dispatch }) =>  {
                 return
             }
             dispatch(addTile(vals[0], vals[1], vals[2]))
+
             input.value = ''
         }}>
-            <input ref={node => {
-                input = node
-            }} />
-            <button type="submit">Add Tile</button>
+        
+
+        <input ref={node => {
+            input = node
+        }} />
+        <RaisedButton  type="submit" label="Add tile" primary={true} style={style} />
         </form>
     </div>)
 }

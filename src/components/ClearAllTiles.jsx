@@ -1,11 +1,18 @@
 import React from 'react'
+import RaisedButton from 'material-ui/RaisedButton'
+
+const style = {
+  margin: 12,
+}
 
 const ClearAllTiles = ({ onRemoveAllTilesClick }) => {
 
     return (    
-        <div onClick={onRemoveAllTilesClick}>
-            Clear all tiles!
-        </div>
+    <RaisedButton 
+        label="Clear tiles" 
+        secondary={true} 
+        onClick={onRemoveAllTilesClick}
+        style={style} />
     )
 }
 

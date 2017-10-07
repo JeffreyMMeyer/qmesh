@@ -3,9 +3,7 @@ import { removeAllTiles } from '../actions'
 import ClearAllTiles from '../components/ClearAllTiles.jsx'
 
 const mapStateToProps = (state) => { 
-    return ({
-        tiles: state.tiles
-    })
+    return state
 }
 
 const mapDispatchToProps = {

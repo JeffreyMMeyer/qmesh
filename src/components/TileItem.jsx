@@ -9,4 +9,3 @@ const TileItem = ({ onRemoveClick, id }) => (
 
 
 export default TileItem
-

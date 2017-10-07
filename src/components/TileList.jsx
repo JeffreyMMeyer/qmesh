@@ -1,15 +1,20 @@
 import React from 'react';
 import TileItem from '../components/TileItem.jsx' 
+import {List, ListItem} from 'material-ui/List'
+import Subheader from 'material-ui/Subheader'
 
-const TileList = ({ tiles, onRemoveTileClick }) => (<ul>
-        {tiles.map(tile =>
-        <TileItem
+const TileList = ({ tiles, onRemoveTileClick }) => (
+    
+    
+    <List>
+        {tiles.map(tile => 
+            <ListItem 
             key={tile.id}
-            {...tile}
-            onRemoveClick={() => onRemoveTileClick(tile.id)}
-        />
-        )}
-    </ul>
-    )
+            primaryText={tile.id}
+            
+            />)
+        }
+    </List>)
+    
  
 export default TileList
