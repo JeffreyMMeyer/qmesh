@@ -25,9 +25,8 @@ let AddTile = ({ dispatch }) =>  {
             <button type="submit">Add Tile</button>
         </form>
     </div>)
-
 }
-console.log(AddTile);
+
 AddTile = connect()(AddTile)
 
 export default AddTile

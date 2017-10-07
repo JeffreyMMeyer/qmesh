@@ -1,6 +1,6 @@
 import React from 'react';
 
-const TileViewer = () => {
+const TileViewer = ({tiles}) => {
 
     return (    
         <div>
