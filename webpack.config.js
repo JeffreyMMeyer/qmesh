@@ -32,11 +32,11 @@ var config = {
         exclude: /(node_modules)/,
         test: /\.jsx?$/,  //Check for all js files
         use: [{
-        // exclude: /(node_modules|bower_components)/,
-        loader: 'babel-loader',
-        options: { 
-          presets: ['react', 'es2015', 'es2017'] }
-        }]
+          loader: 'babel-loader',
+          options: { 
+            presets: ['stage-0', 'react', 'es2015', 'es2017'] }
+          }
+        ]
       }, 
       {
           include: /node_modules\/mapbox-gl.*\.js$/,

@@ -35,6 +35,8 @@ const App = () =>  {
                 
                 <div style={{
                     margin:0,
+                    marginTop:20,
+                    backgroundColor: "black",
                     float: "left",
                     marginLeft: "0",
                     width: "50%",
