@@ -8,8 +8,9 @@ const getTileUrl = (x,y,z) => { return url + "/"+x+"/"+y+"/"+z+ ".terrain?v=1.16
 export const addTile = (x, y, z) => {
  return {
     type: 'ADD_TILE',
-    tile: {         
-        id: getTileId(x,y,z),
+    tile: {
+        name: getTileId(x,y,z),
+        id: getTileUrl(x,y,z),
         url: getTileUrl(x,y,z),
         x,
         y,

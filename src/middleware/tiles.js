@@ -1,9 +1,10 @@
 import axios from 'axios'
 import QTileReader from '../tiles/QuantiziedMeshTileReader.js'
 
-const url = "http://assets.agi.com/stk-terrain/world";
-const getTileId = (tile) => { return "tile-"+tile.x+"/"+tile.y+"/"+tile.z; }
-const getTileUrl = (tile) => { return url + "/"+tile.x+"/"+tile.y+"/"+tile.z+ ".terrain?v=1.16389.0" }
+// const terrainUrl = "http://assets.agi.com/stk-terrain/world";
+// const getTileId = (tile) => { return "tile-"+tile.x+"/"+tile.y+"/"+tile.z; }
+// const getTileUrl = (tile) => { return url + "/"+tile.x+"/"+tile.y+"/"+tile.z+ ".terrain?v=1.16389.0" }
+
 
 function getTileRequest(url) {
     return new Promise((resolve, reject) => {
@@ -35,25 +36,23 @@ const tilesMiddleware = (store) => (next) => (action) => {
     switch (action.type) {
 
         case "ADD_TILE":  
-            console.log(getTileUrl(action.tile))
             store.dispatch({
                 type: "FETCH_TILE",
-                payload: getTileRequest(getTileUrl(action.tile))
+                payload: getTileRequest(action.tile.url)
             })
-            
-            
         break;
 
         case "FETCH_TILE_FULFILLED":
-            console.log(action);
-            if (action.payload.status === 200) {  
-                console.log(action.data)
+            if (action.payload.status === 200) {
+
                 var tileData = QTileReader.parseTile(action.payload.data)
                 
                 store.dispatch({
-                    type: "ADD_PARSED", 
-                    data: tileData,
-                    url: action.payload.url
+                    type: "TILE_PARSED", 
+                    payload: {
+                        data: tileData,
+                        url: action.payload.url
+                    }
                 })
             } else {
                 store.dispatch({

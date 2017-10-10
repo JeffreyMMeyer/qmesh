@@ -3,9 +3,7 @@ import TileViewer from '../components/TileViewer.jsx'
 import {removeTile} from '../actions'
 
 const mapStateToProps = (state) => { 
-    return ({
-        tiles: state.tiles
-    })
+    return state.tiles
 }
 
 

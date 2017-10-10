@@ -12,7 +12,7 @@ const TileList = ({ tiles, onRemoveTileClick }) => {
         {tiles.map(tile => 
             <ListItem 
             key={tile.id}
-            primaryText={tile.id}            
+            primaryText={tile.name}            
             />)
         }
     </List>)
