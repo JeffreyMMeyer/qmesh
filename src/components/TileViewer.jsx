@@ -16,7 +16,7 @@ export default class TileViewer extends Component {
 
     animate() { 
         console.log("animating")
-        this.state.renderer.render(this.state.scene, this.state.camera);
+        this.state.renderer.render(this.props.scene, this.state.camera);
     }
     
 
@@ -26,18 +26,17 @@ export default class TileViewer extends Component {
         var fieldOfView = 45;
         var height = this.props.render.height;
         var width = this.props.render.width;
+
         var aspectRatio = width/height;
         var nearPlane = 1;
         var farPlane = 10000;
 
-        var renderer = new THREE.WebGLRenderer();               /*  Rendererererers particles.  */
-        renderer.setPixelRatio(window.devicePixelRatio);    /*  Probably 1; unless you're fancy.    */
-        console.log(width, height);
-        renderer.setSize(width, height);                    /*  Full screen baby Wooooo!    */
+        var renderer = new THREE.WebGLRenderer(); 
+        renderer.setPixelRatio(window.devicePixelRatio); 
+        
+        renderer.setSize(width, height); 
         renderer.setClearColor(0x454545, 0);
-        // var renderer = this.setupRender(400,1200);
 
-        var scene = new THREE.Scene();
         var camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
         camera.position.z = 2000;
         camera.position.x=-300;
@@ -47,7 +46,6 @@ export default class TileViewer extends Component {
 
         this.state = {
             renderer : renderer,
-            scene: scene,
             camera: camera,
             tiles : {}
         }
@@ -57,12 +55,12 @@ export default class TileViewer extends Component {
         console.log(this.state.renderer.domElement)
         this.refs.threeview.append(this.state.renderer.domElement);
         var ambientLight = new THREE.AmbientLight(0x343434);
-        this.state.scene.add(ambientLight);
+        this.props.scene.add(ambientLight);
 
         var spotLight = new THREE.SpotLight(0xafaffa);
         spotLight.position.set(500, 20, 500);
         spotLight.castShadow = true;
-        this.state.scene.add(spotLight);
+        this.props.scene.add(spotLight);
 
 
         var controls = new THREE.OrbitControls( this.state.camera, this.state.renderer.domElement );
@@ -70,7 +68,7 @@ export default class TileViewer extends Component {
         
         requestAnimationFrame(this.animate);
         console.log("mounted!")
-
+        
     }
 
 
@@ -92,12 +90,9 @@ export default class TileViewer extends Component {
         geometry.faces = qtile.faces
         geometry.computeFaceNormals()
         geometry.computeVertexNormals()
-
         var material = new THREE.MeshLambertMaterial()
-
         var mesh = new THREE.Mesh(geometry, material)
-        console.log(this.state.scene)
-        this.state.scene.add(mesh)
+        this.props.scene.add(mesh)
 
     }
 
@@ -106,7 +101,7 @@ export default class TileViewer extends Component {
     }
 
     removeAll() {
-
+        this.scene.remove(mesh)
     }
 
     render() {
