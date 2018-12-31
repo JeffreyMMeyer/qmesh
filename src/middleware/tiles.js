@@ -1,11 +1,6 @@
 import axios from 'axios'
 import QTileReader from '../tiles/QuantiziedMeshTileReader.js'
 
-// const terrainUrl = "http://assets.agi.com/stk-terrain/world";
-// const getTileId = (tile) => { return "tile-"+tile.x+"/"+tile.y+"/"+tile.z; }
-// const getTileUrl = (tile) => { return url + "/"+tile.x+"/"+tile.y+"/"+tile.z+ ".terrain?v=1.16389.0" }
-
-
 function getTileRequest(url) {
     return new Promise((resolve, reject) => {
 
@@ -18,7 +13,7 @@ function getTileRequest(url) {
                     status: this.status,
                     data: this.response});
             }
-            reject();            
+            reject();               
         }
         xhr.timeout = 5000;
         xhr.ontimeout = (e) => reject
